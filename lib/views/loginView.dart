@@ -9,7 +9,6 @@ class LoginView extends StatefulWidget {
 }
 
 class _LoginViewState extends State<LoginView> {
-
   late final TextEditingController _email;
   late final TextEditingController _password;
 
@@ -39,18 +38,16 @@ class _LoginViewState extends State<LoginView> {
           children: [
             TextField(
               controller: _email,
-              decoration: const InputDecoration(
-                  hintText: 'Enter Your Email Here'
-              ),
+              decoration:
+                  const InputDecoration(hintText: 'Enter Your Email Here'),
               enableSuggestions: false,
               autocorrect: false,
               keyboardType: TextInputType.emailAddress,
             ),
             TextField(
               controller: _password,
-              decoration: const InputDecoration(
-                  hintText: 'Enter Your Password Here'
-              ),
+              decoration:
+                  const InputDecoration(hintText: 'Enter Your Password Here'),
               obscureText: true,
               enableSuggestions: false,
               autocorrect: false,
@@ -60,28 +57,23 @@ class _LoginViewState extends State<LoginView> {
                   final email = _email.text;
                   final password = _password.text;
 
-                  try{
-                    final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-                        email: email,
-                        password: password
-                    );
-                  } on FirebaseAuthException catch(e) {
-                    if(e.code == 'user-not-found') {
+                  try {
+                    final userCredential = await FirebaseAuth.instance
+                        .signInWithEmailAndPassword(
+                            email: email, password: password);
+                  } on FirebaseAuthException catch (e) {
+                    if (e.code == 'user-not-found') {
                       print('No user with that email address.');
-                    }else if(e.code == 'wrong-password') {
+                    } else if (e.code == 'wrong-password') {
                       print('Incorrect password.');
                     }
                   }
-
                 },
-                child: const Text("Log In")
-            ),
+                child: const Text("Log In")),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                  '/register/',
-                   (route) => false
-                );
+                Navigator.of(context)
+                    .pushNamedAndRemoveUntil('/register/', (route) => false);
               },
               child: const Text("Don't have an account? Register Now."),
             ),
@@ -91,4 +83,3 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 }
-

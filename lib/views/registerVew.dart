@@ -9,7 +9,6 @@ class RegisterView extends StatefulWidget {
 }
 
 class _RegisterViewState extends State<RegisterView> {
-
   late final TextEditingController _email;
   late final TextEditingController _password;
 
@@ -39,18 +38,16 @@ class _RegisterViewState extends State<RegisterView> {
           children: [
             TextField(
               controller: _email,
-              decoration: const InputDecoration(
-                  hintText: 'Enter Your Email Here'
-              ),
+              decoration:
+                  const InputDecoration(hintText: 'Enter Your Email Here'),
               enableSuggestions: false,
               autocorrect: false,
               keyboardType: TextInputType.emailAddress,
             ),
             TextField(
               controller: _password,
-              decoration: const InputDecoration(
-                  hintText: 'Enter Your Password Here'
-              ),
+              decoration:
+                  const InputDecoration(hintText: 'Enter Your Password Here'),
               obscureText: true,
               enableSuggestions: false,
               autocorrect: false,
@@ -60,31 +57,27 @@ class _RegisterViewState extends State<RegisterView> {
                   final email = _email.text;
                   final password = _password.text;
 
-                  try{
-                    final userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-                        email: email,
-                        password: password
-                    );
+                  try {
+                    final userCredential = await FirebaseAuth.instance
+                        .createUserWithEmailAndPassword(
+                            email: email, password: password);
 
                     print(userCredential);
-                  } on FirebaseAuthException catch(e) {
-                    if(e.code == 'weak-password') {
+                  } on FirebaseAuthException catch (e) {
+                    if (e.code == 'weak-password') {
                       print('Weak password, Enter a stronger one.');
-                    }else if(e.code == 'email-already-in-use') {
+                    } else if (e.code == 'email-already-in-use') {
                       print('Email already exists.');
-                    }else if(e.code == 'invalid-email') {
+                    } else if (e.code == 'invalid-email') {
                       print('Invalid email entered');
                     }
                   }
                 },
-                child: const Text("Register")
-            ),
+                child: const Text("Register")),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                  '/login/',
-                  (route) => false
-                );
+                Navigator.of(context)
+                    .pushNamedAndRemoveUntil('/login/', (route) => false);
               },
               child: const Text("Already have an account?, login."),
             ),
@@ -94,5 +87,3 @@ class _RegisterViewState extends State<RegisterView> {
     );
   }
 }
-
-
