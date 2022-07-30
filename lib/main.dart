@@ -7,7 +7,6 @@ import 'package:mynotes/firebase_options.dart';
 import 'package:mynotes/views/loginView.dart';
 import 'package:mynotes/views/registerVew.dart';
 import 'package:mynotes/views/verifyEmailView.dart';
-import 'dart:developer' as devtools show log;
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,6 +20,7 @@ void main() {
     routes: {
       '/login/': (context) => const LoginView(),
       '/register/': (context) => const RegisterView(),
+      '/notes/': (context) => const NotesViewWidget(),
     },
   ));
 }
@@ -37,16 +37,16 @@ class HomePage extends StatelessWidget {
         switch (snapshot.connectionState) {
           case ConnectionState.done:
             final user = FirebaseAuth.instance.currentUser;
-            // if (user != null) {
-            //   if (user.emailVerified) {
-            //      return const NotesViewWidget();
-            //   } else {
-            //     return const VerifyEmailView();
-            //   }
-            // } else {
-            //   return const LoginView();
-            // }
-            return const NotesViewWidget();
+            if (user != null) {
+              // if (user.emailVerified) {
+                 return const NotesViewWidget();
+              // } else {
+              //   return const VerifyEmailView();
+              // }
+            } else {
+              return const LoginView();
+            }
+            // return const NotesViewWidget();
           default:
             return const CircularProgressIndicator();
         }
