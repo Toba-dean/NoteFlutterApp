@@ -66,11 +66,13 @@ class _RegisterViewState extends State<RegisterView> {
                         .createUserWithEmailAndPassword(
                             email: email, password: password);
 
+                    final user = FirebaseAuth.instance.currentUser;
+                    await user?.sendEmailVerification();
                     Navigator.of(context)
-                      .pushNamedAndRemoveUntil(notesRoute, (route) => false);
+                      .pushNamed(verifyEmailRoute);
                   } on FirebaseAuthException catch (e) {
                     if (e.code == 'weak-password') {
-                      showErrorDialog(context, 'Weak password, Enter a stronger one.');
+                      showErrorDialog(context, 'Weak password, Enter a more secure one.');
                     } else if (e.code == 'email-already-in-use') {
                       showErrorDialog(context, 'Email already exists.');
                     } else if (e.code == 'invalid-email') {
