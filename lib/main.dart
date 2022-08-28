@@ -37,7 +37,8 @@ class HomePage extends StatelessWidget {
     // this future builder widget makes flutter waits until firebase is initialized before builder the UI
     return FutureBuilder(
       future: Firebase.initializeApp(
-          options: DefaultFirebaseOptions.currentPlatform),
+        options: DefaultFirebaseOptions.currentPlatform
+      ),
       builder: (context, snapshot) {
         switch (snapshot.connectionState) {
           case ConnectionState.done:
