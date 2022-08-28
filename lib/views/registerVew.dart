@@ -1,5 +1,5 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:developer' as devtools show log;
 
 import 'package:mynotes/constants/routes.dart';
@@ -16,6 +16,7 @@ class _RegisterViewState extends State<RegisterView> {
   late final TextEditingController _email;
   late final TextEditingController _password;
 
+// Setting the state of the textfield.
   @override
   void initState() {
     _email = TextEditingController();
@@ -23,6 +24,7 @@ class _RegisterViewState extends State<RegisterView> {
     super.initState();
   }
 
+// disposing it after use.
   @override
   void dispose() {
     _email.dispose();
@@ -57,34 +59,36 @@ class _RegisterViewState extends State<RegisterView> {
               autocorrect: false,
             ),
             TextButton(
-                onPressed: () async {
-                  final email = _email.text;
-                  final password = _password.text;
+              onPressed: () async {
+                // get the values in the email and password textfield.
+                final email = _email.text;
+                final password = _password.text;
 
-                  try {
-                    final userCredential = await FirebaseAuth.instance
-                        .createUserWithEmailAndPassword(
-                            email: email, password: password);
+                try {
+                  final userCredential = await FirebaseAuth.instance
+                      .createUserWithEmailAndPassword(
+                          email: email, password: password);
 
-                    final user = FirebaseAuth.instance.currentUser;
-                    await user?.sendEmailVerification();
-                    Navigator.of(context)
-                      .pushNamed(verifyEmailRoute);
-                  } on FirebaseAuthException catch (e) {
-                    if (e.code == 'weak-password') {
-                      showErrorDialog(context, 'Weak password, Enter a more secure one.');
-                    } else if (e.code == 'email-already-in-use') {
-                      showErrorDialog(context, 'Email already exists.');
-                    } else if (e.code == 'invalid-email') {
-                      showErrorDialog(context, 'Invalid email entered');
-                    } else {
-                      return showErrorDialog(context, 'Error: {$e.code}');
-                    }
-                  } catch(e) {
-                    showErrorDialog(context, e.toString());
+                  final user = FirebaseAuth.instance.currentUser;
+                  await user?.sendEmailVerification();
+                  Navigator.of(context).pushNamed(verifyEmailRoute);
+                } on FirebaseAuthException catch (e) {
+                  if (e.code == 'weak-password') {
+                    showErrorDialog(
+                        context, 'Weak password, Enter a more secure one.');
+                  } else if (e.code == 'email-already-in-use') {
+                    showErrorDialog(context, 'Email already exists.');
+                  } else if (e.code == 'invalid-email') {
+                    showErrorDialog(context, 'Invalid email entered');
+                  } else {
+                    return showErrorDialog(context, 'Error: {$e.code}');
                   }
-                },
-                child: const Text("Register")),
+                } catch (e) {
+                  showErrorDialog(context, e.toString());
+                }
+              },
+              child: const Text("Register"),
+            ),
             TextButton(
               onPressed: () {
                 Navigator.of(context)

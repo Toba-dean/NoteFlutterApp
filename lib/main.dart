@@ -1,8 +1,8 @@
+import 'package:flutter/material.dart';
 import 'dart:developer' as devtools show log;
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/material.dart';
+
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/firebase_options.dart';
 import 'package:mynotes/views/loginView.dart';
@@ -10,6 +10,7 @@ import 'package:mynotes/views/registerVew.dart';
 import 'package:mynotes/views/verifyEmailView.dart';
 
 void main() {
+  // This initializes the firebase
   WidgetsFlutterBinding.ensureInitialized();
 
   runApp(MaterialApp(
@@ -32,6 +33,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // this future builder widget makes flutter waits until firebase is initialized before builder the UI
     return FutureBuilder(
       future: Firebase.initializeApp(
           options: DefaultFirebaseOptions.currentPlatform),
@@ -41,14 +43,13 @@ class HomePage extends StatelessWidget {
             final user = FirebaseAuth.instance.currentUser;
             if (user != null) {
               if (user.emailVerified) {
-                 return const NotesViewWidget();
+                return const NotesViewWidget();
               } else {
                 return const VerifyEmailView();
               }
             } else {
               return const LoginView();
             }
-            // return const NotesViewWidget();
           default:
             return const CircularProgressIndicator();
         }
@@ -75,13 +76,13 @@ class _NotesViewWidgetState extends State<NotesViewWidget> {
         actions: [
           PopupMenuButton<MenuAction>(
             onSelected: (value) async {
-              switch(value) {
+              switch (value) {
                 case MenuAction.logout:
                   final shouldLogOut = await showLogOutDialog(context);
-                  if(shouldLogOut) {
+                  if (shouldLogOut) {
                     await FirebaseAuth.instance.signOut();
                     Navigator.of(context)
-                      .pushNamedAndRemoveUntil(loginRoute, (_) => false);
+                        .pushNamedAndRemoveUntil(loginRoute, (_) => false);
                   }
                   break;
               }
@@ -89,9 +90,7 @@ class _NotesViewWidgetState extends State<NotesViewWidget> {
             itemBuilder: (context) {
               return const [
                 PopupMenuItem<MenuAction>(
-                  value: MenuAction.logout, 
-                  child: Text('Log Out')
-                )
+                    value: MenuAction.logout, child: Text('Log Out'))
               ];
             },
           )
@@ -104,26 +103,25 @@ class _NotesViewWidgetState extends State<NotesViewWidget> {
 
 Future<bool> showLogOutDialog(BuildContext context) {
   return showDialog<bool>(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: const Text('Sign Out'),
-        content: const Text('Are you sure you want to sign out?'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(false);
-            },
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(true);
-            },
-            child: const Text('Log Out'),
-          )
-        ],
-      );
-    }
-  ).then((value) => value ?? false);
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Sign Out'),
+          content: const Text('Are you sure you want to sign out?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+              child: const Text('Log Out'),
+            )
+          ],
+        );
+      }).then((value) => value ?? false);
 }
