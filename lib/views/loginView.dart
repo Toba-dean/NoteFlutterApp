@@ -90,7 +90,7 @@ class _LoginViewState extends State<LoginView> {
             TextButton(
               onPressed: () {
                 Navigator.of(context)
-                    .pushNamedAndRemoveUntil(registerRoute, (route) => false);
+                    .pushNamedAndRemoveUntil(registerRoute, (_) => false);
               },
               child: const Text("Don't have an account? Register Now."),
             ),
