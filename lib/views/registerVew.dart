@@ -67,21 +67,37 @@ class _RegisterViewState extends State<RegisterView> {
                 try {
                   final userCredential = await FirebaseAuth.instance
                       .createUserWithEmailAndPassword(
-                          email: email, password: password);
+                        email: email, 
+                        password: password
+                      );
 
                   final user = FirebaseAuth.instance.currentUser;
                   await user?.sendEmailVerification();
+
+                  // This pushNamed makes it possible to go back from a particular page
                   Navigator.of(context).pushNamed(verifyEmailRoute);
+
                 } on FirebaseAuthException catch (e) {
                   if (e.code == 'weak-password') {
                     showErrorDialog(
-                        context, 'Weak password, Enter a more secure one.');
+                      context, 
+                      'Weak password, Enter a more secure one.'
+                    );
                   } else if (e.code == 'email-already-in-use') {
-                    showErrorDialog(context, 'Email already exists.');
+                    showErrorDialog(
+                      context, 
+                      'Email already exists.'
+                    );
                   } else if (e.code == 'invalid-email') {
-                    showErrorDialog(context, 'Invalid email entered');
+                    showErrorDialog(
+                      context, 
+                      'Invalid email entered'
+                    );
                   } else {
-                    return showErrorDialog(context, 'Error: {$e.code}');
+                    return await showErrorDialog(
+                      context, 
+                      'Error: {$e.code}'
+                    );
                   }
                 } catch (e) {
                   showErrorDialog(context, e.toString());
@@ -91,8 +107,10 @@ class _RegisterViewState extends State<RegisterView> {
             ),
             TextButton(
               onPressed: () {
+                // pushedNamedAndRemoveUntil makes it so that u cannot use the back button to go back to prev route.
+
                 Navigator.of(context)
-                    .pushNamedAndRemoveUntil(loginRoute, (route) => false);
+                  .pushNamedAndRemoveUntil(loginRoute, (route) => false);
               },
               child: const Text("Already have an account?, login."),
             ),

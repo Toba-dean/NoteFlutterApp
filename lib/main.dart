@@ -30,7 +30,7 @@ void main() {
 
 // This does the app initialization, then checks if there is a user so it can render the appropriate view.
 class HomePage extends StatelessWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({Key? key}) : super(key: key); 
 
   @override
   Widget build(BuildContext context) {

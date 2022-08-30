@@ -19,11 +19,19 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
       body: Center(
         child: Column(
           children: [
-            const Text(
-                "We've already sent a verification email, please open to verify your account."),
+            const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Text(
+                "We've already sent a verification email, please open email to verify your account."
+              ),
+            ),
 
-            const Text(
-                "If you haven't received a verification, please press the button to resend"),
+            const Padding(
+              padding: EdgeInsets.all(8.0),
+              child:  Text(
+                "If you haven't received a verification, please press the button to resend"
+              ),
+            ),
                 
             TextButton(
               onPressed: () async {
@@ -32,11 +40,12 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
               },
               child: const Text('Click to verify email'),
             ),
+
             TextButton(
               onPressed: () async {
                 await FirebaseAuth.instance.signOut();
                 Navigator.of(context)
-                    .pushNamedAndRemoveUntil(registerRoute, (route) => false);
+                  .pushNamedAndRemoveUntil(registerRoute, (route) => false);
               },
               child: const Text('Restart'),
             )
