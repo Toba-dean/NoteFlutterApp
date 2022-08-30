@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:developer' as devtools show log;
 
 import 'package:mynotes/constants/routes.dart';
+import 'package:mynotes/services/auth/auth_exceptions.dart';
+import 'package:mynotes/services/auth/auth_service.dart';
 import 'package:mynotes/utilities/showErrorDialog.dart';
 
 class RegisterView extends StatefulWidget {
@@ -65,42 +66,36 @@ class _RegisterViewState extends State<RegisterView> {
                 final password = _password.text;
 
                 try {
-                  final userCredential = await FirebaseAuth.instance
-                      .createUserWithEmailAndPassword(
-                        email: email, 
-                        password: password
-                      );
+                  await AuthServices.firbase().createUser(
+                    email: email,
+                    password: password,
+                  );
 
-                  final user = FirebaseAuth.instance.currentUser;
-                  await user?.sendEmailVerification();
+                  final user = AuthServices.firbase().currentUser;
+                  await AuthServices.firbase().sendEmailVerification();
 
                   // This pushNamed makes it possible to go back from a particular page
                   Navigator.of(context).pushNamed(verifyEmailRoute);
-
-                } on FirebaseAuthException catch (e) {
-                  if (e.code == 'weak-password') {
-                    showErrorDialog(
-                      context, 
-                      'Weak password, Enter a more secure one.'
-                    );
-                  } else if (e.code == 'email-already-in-use') {
-                    showErrorDialog(
-                      context, 
-                      'Email already exists.'
-                    );
-                  } else if (e.code == 'invalid-email') {
-                    showErrorDialog(
-                      context, 
-                      'Invalid email entered'
-                    );
-                  } else {
-                    return await showErrorDialog(
-                      context, 
-                      'Error: {$e.code}'
-                    );
-                  }
-                } catch (e) {
-                  showErrorDialog(context, e.toString());
+                } on WeakPasswordAuthException {
+                  await showErrorDialog(
+                    context,
+                    'Weak password, Enter a more secure one.',
+                  );
+                } on EmailInUseAuthException {
+                  await showErrorDialog(
+                    context,
+                    'Email already exists.',
+                  );
+                } on InvalidEmailAuthException {
+                  await showErrorDialog(
+                    context,
+                    'Invalid email entered',
+                  );
+                } on GenericAuthException {
+                  await showErrorDialog(
+                    context,
+                    'Authentication Error.',
+                  );
                 }
               },
               child: const Text("Register"),
@@ -109,8 +104,10 @@ class _RegisterViewState extends State<RegisterView> {
               onPressed: () {
                 // pushedNamedAndRemoveUntil makes it so that u cannot use the back button to go back to prev route.
 
-                Navigator.of(context)
-                  .pushNamedAndRemoveUntil(loginRoute, (route) => false);
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  loginRoute,
+                  (route) => false,
+                );
               },
               child: const Text("Already have an account?, login."),
             ),
