@@ -33,11 +33,18 @@ class NotesService {
   final _noteStreamController =
       StreamController<List<DatabaseNotes>>.broadcast();
 
+  // Making a singleton
+  NotesService._sharedInstance();
+  static final NotesService _shared = NotesService._sharedInstance();
+  factory NotesService() => _shared;
+
   Future<void> _cachedNote() async {
     final allNotes = await getAllNote();
     _notes = List.from(allNotes);
     _noteStreamController.add(_notes);
   }
+
+  Stream<List<DatabaseNotes>> get allNotes => _noteStreamController.stream;
 
   Future<void> open() async {
     if (_db != null) {
@@ -73,6 +80,12 @@ class NotesService {
     }
   }
 
+  Future<void> _ensureDBIsOpen() async {
+    try {
+      await open();
+    } on DatabaseIsNotOpenException {}
+  }
+
   Database _getDatabaseOrThrow() {
     final db = _db;
     if (db == null) {
@@ -84,6 +97,7 @@ class NotesService {
 
   // User CRUD
   Future<void> deleteUser({required String email}) async {
+    await _ensureDBIsOpen();
     final db = _getDatabaseOrThrow();
     final deletedCount = await db.delete(
       userTable,
@@ -96,6 +110,7 @@ class NotesService {
   }
 
   Future<DatabaseUser> createUser({required String email}) async {
+    await _ensureDBIsOpen();
     final db = _getDatabaseOrThrow();
     final result = await db.query(
       userTable,
@@ -120,6 +135,8 @@ class NotesService {
   }
 
   Future<DatabaseUser> getUser({required String email}) async {
+    await _ensureDBIsOpen();
+    await _ensureDBIsOpen();
     final db = _getDatabaseOrThrow();
     final result = await db.query(
       userTable,
@@ -149,6 +166,7 @@ class NotesService {
 
   // Note CRUD
   Future<DatabaseNotes> createNote({required DatabaseUser owner}) async {
+    await _ensureDBIsOpen();
     final db = _getDatabaseOrThrow();
 
     // make sure owner exist with the correct id.
@@ -178,6 +196,7 @@ class NotesService {
   }
 
   Future<void> deleteNote({required int id}) async {
+    await _ensureDBIsOpen();
     final db = _getDatabaseOrThrow();
     final deletedCount = await db.delete(
       noteTable,
@@ -193,6 +212,7 @@ class NotesService {
   }
 
   Future<int> deleteAllNote() async {
+    await _ensureDBIsOpen();
     final db = _getDatabaseOrThrow();
     final numberOfDeleted = await db.delete(noteTable);
 
@@ -202,6 +222,7 @@ class NotesService {
   }
 
   Future<Iterable> getAllNote() async {
+    await _ensureDBIsOpen();
     final db = _getDatabaseOrThrow();
     final notes = await db.query(noteTable);
 
@@ -209,6 +230,7 @@ class NotesService {
   }
 
   Future<DatabaseNotes> getNote({required int id}) async {
+    await _ensureDBIsOpen();
     final db = _getDatabaseOrThrow();
     final result = await db.query(
       noteTable,
@@ -233,6 +255,7 @@ class NotesService {
     required DatabaseNotes note,
     required String text,
   }) async {
+    await _ensureDBIsOpen();
     final db = _getDatabaseOrThrow();
     await getNote(id: note.id);
     final updateCount = await db.update(
